@@ -35,11 +35,16 @@ public:
 		queue.enqueueWriteBuffer(buffer_A, CL_TRUE, 0, sizeof(Block) * width * height, wave);
 		Block_UpdateSpeed.setArg(0, width);
 		Block_UpdateSpeed.setArg(1, buffer_A);
+		cl_int ClErrNum;
 		//Start calculations(NDRange is number of threads)
 		for (int i = 0; i < 20; ++i) {
-			queue.enqueueNDRangeKernel(Block_UpdateSpeed, cl::NullRange, cl::NDRange(width * height), cl::NullRange);
+			ClErrNum = queue.enqueueNDRangeKernel(Block_UpdateSpeed, cl::NullRange, cl::NDRange(width * height), cl::NullRange);
+			if (ClErrNum != CL_SUCCESS)
+				fout << "Error while equeueNDRange: " << ClErrNum << '\n';
 		}
-		queue.enqueueReadBuffer(buffer_A, CL_TRUE, 0, sizeof(Block) * width * height, wave);
+		ClErrNum = queue.enqueueReadBuffer(buffer_A, CL_TRUE, 0, sizeof(Block) * width * height, wave);
+		if (ClErrNum != CL_SUCCESS)
+			fout << "Error while equeueReadBuffer: " << ClErrNum << '\n';
 		queue.finish();
 		fout << double(clock() - start) / CLOCKS_PER_SEC << '\n';
 	}
