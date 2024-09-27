@@ -9,5 +9,4 @@ clean:
 	rm -rf ${BUILD_DIR}
 
 cppcheck:
-	cppcheck \
-	--enable=all \
+	cppcheck .\
